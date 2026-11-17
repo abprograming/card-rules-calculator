@@ -1,3 +1,9 @@
+# Secrets: real values live in .env, which must never be committed.
+# .env.example holds placeholders only and is the one env file that is tracked.
+.env
+.env.*
+!.env.example
+
 # Operating system and editor files
 .DS_Store
 Thumbs.db

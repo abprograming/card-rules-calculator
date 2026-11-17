@@ -17,7 +17,7 @@
     <p class="wordmark" id="app-name">Card Rules Calculator</p>
     <h1>Which card should take this purchase?</h1>
     <p class="lede">Tick the cards you hold and set your own rules. The plan below names the card to use for each kind of spending and shows what your current habit leaves unearned.</p>
-    <p class="private">Nothing you enter leaves this page. No sign-up, no bank login.</p>
+    <p class="private">Your cards, spending and rules never leave this page. No sign-up, no bank login.</p>
   </header>
 
   <main class="layout">
@@ -147,7 +147,11 @@
             <option value="100">$100 or more</option>
           </select>
         </label>
+        <div class="trap" aria-hidden="true">
+          <label>Leave this empty <input type="text" id="wl-website" name="website" tabindex="-1" autocomplete="off"></label>
+        </div>
         <button type="submit" class="btn btn-primary" id="wl-submit">Join the waitlist</button>
+        <p class="consent" id="wl-consent"></p>
         <p class="form-msg" id="wl-msg" role="status"></p>
       </form>
     </div>
@@ -162,6 +166,7 @@
   <script src="js/config.js"></script>
   <script src="js/cards.js"></script>
   <script src="js/solver.js"></script>
+  <script src="js/waitlist.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

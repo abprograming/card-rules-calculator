@@ -1,0 +1,4 @@
+#!/bin/sh
+# Blocks a commit that would carry a private key. Enabled with:
+#   git config core.hooksPath .githooks
+node test/no-secrets.test.js

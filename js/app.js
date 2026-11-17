@@ -432,30 +432,36 @@
 
   (function waitlist() {
     var form = $('waitlist-form'), msg = $('wl-msg'), button = $('wl-submit');
-    if (!CONFIG.waitlistEndpoint) {
+    var W = window.CRCWaitlist;
+    $('wl-consent').textContent = W.CONSENT_TEXT;
+
+    var problem = W.configProblem(CONFIG.waitlist);
+    if (problem) {
       button.disabled = true;
       $('wl-email').disabled = true;
       $('wl-price').disabled = true;
       msg.className = 'form-msg form-msg-setup';
-      msg.textContent = 'Setup needed: the waitlist is not connected yet. Add your form address in js/config.js.';
+      msg.textContent = problem;
       return;
     }
+
     form.addEventListener('submit', function (e) {
       e.preventDefault();
-      var email = $('wl-email').value.trim();
-      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { msg.textContent = 'Enter a valid email address.'; $('wl-email').focus(); return; }
+      var email = $('wl-email').value;
+      if (!W.validEmail(email)) { msg.textContent = 'Enter a valid email address.'; $('wl-email').focus(); return; }
+      // Spam trap: people never see this field, so anything in it came from a
+      // bot. Answer as if it worked and send nothing.
+      if ($('wl-website').value) { form.reset(); msg.textContent = 'You are on the waitlist.'; return; }
+
+      var req = W.buildRequest(CONFIG.waitlist, { email: email, wouldPay: $('wl-price').value });
       button.disabled = true;
       msg.textContent = 'Joining…';
-      fetch(CONFIG.waitlistEndpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({ email: email, would_pay_per_year: $('wl-price').value, source: 'calculator' })
-      }).then(function (res) {
-        if (!res.ok) throw new Error('status ' + res.status);
+      fetch(req.url, req.options).then(function (res) {
+        if (W.outcome(res.status) !== 'joined') throw new Error('status ' + res.status);
         form.reset();
         msg.textContent = 'You are on the waitlist.';
       }).catch(function () {
-        msg.textContent = 'That did not go through. Check your connection and try again.';
+        msg.textContent = 'That did not go through, so you are not on the list yet. Try again in a moment.';
       }).then(function () { button.disabled = false; });
     });
   })();

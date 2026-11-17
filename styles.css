@@ -182,6 +182,7 @@ input[type='text'], input[type='number'], input[type='email'], select {
   border: 1px solid #9fb0a8;
   border-radius: 8px;
   background: #fff;
+  color: var(--ink);
 }
 input[type='number'] { font-family: var(--mono); }
 input:disabled, select:disabled { background: #f0f2f1; color: var(--muted); }
@@ -351,6 +352,9 @@ input:disabled, select:disabled { background: #f0f2f1; color: var(--muted); }
 .waitlist-form .btn-primary:hover { background: #e6e2fb; }
 .waitlist-form .btn:disabled { background: #6b7790; color: #dfe5f1; }
 .waitlist-form :focus-visible { outline-color: #fff; }
+.waitlist .consent { font-size: 0.875rem; color: #c9d2e3; margin-top: 12px; max-width: 46ch; }
+/* Spam trap: kept out of sight and out of the tab order, but still in the form. */
+.trap { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 .waitlist .form-msg { color: #dfe5f1; margin-top: 10px; }
 .waitlist .form-msg-setup { color: var(--amber); }
 
