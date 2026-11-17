@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Card Rules Calculator</title>
+  <meta name="description" content="Add your credit cards and your own rules. See which card to use for each kind of spending, and what your current habit leaves unearned.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Spline+Sans+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip" href="#plan">Skip to your plan</a>
+
+  <header class="masthead">
+    <p class="wordmark" id="app-name">Card Rules Calculator</p>
+    <h1>Which card should take this purchase?</h1>
+    <p class="lede">Tick the cards you hold and set your own rules. The plan below names the card to use for each kind of spending and shows what your current habit leaves unearned.</p>
+    <p class="private">Nothing you enter leaves this page. No sign-up, no bank login.</p>
+  </header>
+
+  <main class="layout">
+    <div class="inputs">
+
+      <section class="panel" aria-labelledby="h-cards">
+        <h2 id="h-cards">Your cards</h2>
+        <p class="hint">The example wallet is ticked to start. Change it to yours.</p>
+        <div id="card-list" class="card-list"></div>
+
+        <details class="custom">
+          <summary>Add a card that is not listed</summary>
+          <form id="custom-form" class="custom-form" novalidate>
+            <label>Card name
+              <input type="text" id="custom-name" maxlength="40" autocomplete="off" required>
+            </label>
+            <label>Rate on everything (%)
+              <input type="number" id="custom-base" min="0" max="20" step="0.1" value="1" inputmode="decimal" required>
+            </label>
+            <label>Bonus category
+              <select id="custom-cat"></select>
+            </label>
+            <label>Bonus rate (%)
+              <input type="number" id="custom-rate" min="0" max="20" step="0.1" inputmode="decimal">
+            </label>
+            <label>Annual fee ($)
+              <input type="number" id="custom-fee" min="0" step="1" value="0" inputmode="numeric">
+            </label>
+            <button type="submit" class="btn btn-quiet">Add card</button>
+            <p class="form-msg" id="custom-msg" role="status"></p>
+          </form>
+        </details>
+      </section>
+
+      <section class="panel" aria-labelledby="h-spend">
+        <h2 id="h-spend">Monthly spending</h2>
+        <p class="hint">Rough numbers are fine. Use a typical month.</p>
+        <div id="spend-list" class="spend-list"></div>
+        <p class="spend-total">Total <output id="spend-total"></output> a month</p>
+      </section>
+
+      <section class="panel" aria-labelledby="h-today">
+        <h2 id="h-today">What you do today</h2>
+        <label class="stack">Card you use for most purchases
+          <select id="everyday"></select>
+        </label>
+        <p class="hint">The plan is compared with putting everything on this card.</p>
+      </section>
+
+      <section class="panel" aria-labelledby="h-rules">
+        <h2 id="h-rules">Your rules</h2>
+
+        <div class="rule">
+          <label class="check"><input type="checkbox" id="share-on"> <span>No card takes more than a set share of my spending</span></label>
+          <div class="rule-body" id="share-body">
+            <label class="inline">Ceiling
+              <input type="range" id="share-pct" min="10" max="100" step="5">
+              <output id="share-out"></output>
+            </label>
+          </div>
+        </div>
+
+        <div class="rule">
+          <label class="check"><input type="checkbox" id="util-on"> <span>Keep each card's monthly spending under a share of its credit limit</span></label>
+          <div class="rule-body" id="util-body">
+            <label class="inline">Ceiling
+              <input type="range" id="util-pct" min="5" max="100" step="5">
+              <output id="util-out"></output>
+            </label>
+            <div id="limit-list" class="limit-list"></div>
+            <p class="hint">Leave a limit blank and that card has no ceiling.</p>
+          </div>
+        </div>
+
+        <div class="rule">
+          <label class="check"><input type="checkbox" id="bonus-on"> <span>Finish a welcome bonus first</span></label>
+          <div class="rule-body" id="bonus-body">
+            <label class="stack">Card
+              <select id="bonus-card"></select>
+            </label>
+            <div class="trio">
+              <label class="stack">Spend still needed ($)
+                <input type="number" id="bonus-spend" min="0" step="50" inputmode="numeric">
+              </label>
+              <label class="stack">Months left
+                <input type="number" id="bonus-months" min="1" max="24" step="1" inputmode="numeric">
+              </label>
+              <label class="stack">Bonus worth ($)
+                <input type="number" id="bonus-value" min="0" step="25" inputmode="numeric">
+              </label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="h-values" id="values-panel">
+        <h2 id="h-values">What a point is worth to you</h2>
+        <p class="hint">In cents per point. 1 is what most points fetch as cash. Raise it if you transfer points to airlines or hotels.</p>
+        <div id="value-list" class="value-list"></div>
+      </section>
+
+      <button type="button" class="btn btn-quiet reset" id="reset">Start over with the example</button>
+    </div>
+
+    <aside class="results" id="plan" aria-labelledby="h-plan" tabindex="-1">
+      <h2 id="h-plan" class="visually-hidden">Your plan</h2>
+      <div id="results" aria-live="polite"></div>
+    </aside>
+  </main>
+
+  <section class="waitlist" aria-labelledby="h-wait">
+    <div class="waitlist-inner">
+      <div>
+        <h2 id="h-wait">Want this at the checkout?</h2>
+        <p>An iPhone app is planned that keeps this plan current as you spend and tells you which card to use where you are. Leave an email to hear when it is ready.</p>
+      </div>
+      <form id="waitlist-form" class="waitlist-form" novalidate>
+        <label class="stack">Email
+          <input type="email" id="wl-email" autocomplete="email" required>
+        </label>
+        <label class="stack">What would you pay for it per year? (optional)
+          <select id="wl-price">
+            <option value="">Prefer not to say</option>
+            <option value="0">Nothing</option>
+            <option value="40">About $40</option>
+            <option value="72">About $70</option>
+            <option value="100">$100 or more</option>
+          </select>
+        </label>
+        <button type="submit" class="btn btn-primary" id="wl-submit">Join the waitlist</button>
+        <p class="form-msg" id="wl-msg" role="status"></p>
+      </form>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>Reward rates were last checked on <span id="rates-checked"></span> and can change without notice. Check your card's terms before relying on a number here.</p>
+    <p>Only rates on ordinary purchases are counted. Travel-portal rates, rotating quarterly categories and first-year promotions are left out. How a store is categorised can differ between card issuers.</p>
+    <p>This is general information, not financial advice. This site is not affiliated with any card issuer and earns nothing from the cards shown.</p>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/cards.js"></script>
+  <script src="js/solver.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
